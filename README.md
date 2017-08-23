@@ -142,4 +142,4 @@ MIT
 
 ## Author
 
-  - [Weezly](https://github.com/weezly) 
+  - [bewibu](https://github.com/bewibu) 
