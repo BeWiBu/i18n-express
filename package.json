@@ -1,6 +1,6 @@
 {
-  "name": "i18n-express",
-  "version": "1.1.2",
+  "name": "i18n-multi-express",
+  "version": "0.0.1",
   "description": "A simple i18n middleware for Express.js.",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/koalazak/i18n-express.git"
+    "url": "https://github.com/weezly/i18n-multi-express.git"
   },
   "keywords": [
     "i18n",
@@ -41,10 +41,13 @@
     "handlebars",
     "ejs"
   ],
-  "author": "koalazak <zak.tux@gmail.com>",
+  "author": "weezly",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/koalazak/i18n-express/issues"
+    "url": "https://github.com/weezly/i18n-multi-express/issues"
   },
-  "homepage": "https://github.com/koalazak/i18n-express"
+  "homepage": "https://github.com/weezly/i18n-multi-express",
+  "dependencies": {
+    "extend": "^3.0.1"
+  }
 }

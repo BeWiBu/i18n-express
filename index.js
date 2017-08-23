@@ -1,4 +1,5 @@
 var fs = require('fs');
+var extend = require('extend');
 
 function getLangFromHeaders (req) {
   var languagesRaw = req.headers['accept-language'] || 'NONE';
@@ -63,19 +64,30 @@ exports = module.exports = function (opts) {
 
   var computedLang = '';
 
-  i18nTranslations = loadLangJSONFiles(translationsPath, defaultLang);
+  var translationPaths=[];
 
-  fs.watch(translationsPath, function (event, filename) {
-    if (filename) {
-      try {
-        i18nTranslations = loadLangJSONFiles(translationsPath, defaultLang);
-      } catch (ee) {
-        // Some editors first empty the file and then save the content. This generate a "Unexpected end of input" error
+  function addTranslationsPath(path){
+    if(translationPaths.indexOf(path)>=0)
+      return;
+
+    var thisTranslations = loadLangJSONFiles(path, defaultLang);
+    extend(i18nTranslations,thisTranslations);
+    
+    fs.watch(path, function (event, filename) {
+      if (filename) {
+        try {
+          var thisTranslations = loadLangJSONFiles(path, defaultLang);
+          extend(i18nTranslations,thisTranslations);
+        } catch (ee) {
+          // Some editors first empty the file and then save the content. This generate a "Unexpected end of input" error
+        }
       }
-    }
-  });
+    });
+  }
 
-  return function i18n (req, res, next) {
+ 
+
+  function express (req, res, next) {
     var alreadyTryCookie = false;
     var alreadyBrowser = false;
     // set textsVarName value for tests and variable recovery
@@ -152,4 +164,9 @@ exports = module.exports = function (opts) {
 
     next();
   };
+
+  return{
+    express:express,
+    addTranslationsPath:addTranslationsPath   
+  }
 };

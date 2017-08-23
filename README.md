@@ -1,36 +1,36 @@
-# i18n-express
-[![Build Status](https://img.shields.io/travis/koalazak/i18n-express.svg)](https://travis-ci.org/koalazak/i18n-express)
-[![npm version](https://badge.fury.io/js/i18n-express.svg)](http://badge.fury.io/js/i18n-express)
+# i18n-express-4plugin
 
-A simple i18n middleware for Express.js
-This module just reads all the <lang>.json files in a directory. Then calculates the user lang and exposes "texts" variables in your views with the texts in that json. 
+This repository is based on [Facu ZAK's 'i18n-express'](https://github.com/koalazak/i18n-express).
+The difference is the option, to add further translation paths.
+This was necessary for me in a plug-in system, since additional modules had to be dynamically loaded there.
 
-By default, the user will see the site in the language set by the `cookieLangName` session. If the session is not set, the language set by the browser will be used.
+Now in the running system, you can add more translation paths.
 
-If the user wants to set the language to spanish for example, he would have to visit *http://site.com/?clang=es* (clang is defined at `paramLangName`).
+In your post-loaded module...
+```javascript
+var i18n=require('i18n-express-4plugin');
 
-This can be done by using a html 'select' or any other means you want. Once that is done, the `cookieLangName` session will be updated with the new language and the user will forever see the site in the new language until he decides to set a new language again. 
+i18n.addTranslationsPath(path.join(__dirname,"i18n"));
 
-NOTE: When using this module, we recommend also using the [geolang-express](https://github.com/koalazak/geolang-express) module, which sets the `cookieLangName` session to a language based on the visit IP address. 
-
+```
 
 ## Requirements
 
   - Node >= 0.12
   - Express.js
 
-## Instalation
+## Installation
 
 ```bash
-$ npm install i18n-express
+$ npm install i18n-express-4plugin
 ```
 
 ## Usage
 
 ```js
-var i18n=require("i18n-express");
+var i18n=require("i18n-express-4plugin");
 
-app.use( i18n(options) );
+app.use( i18n(options).express );
 ```
 
 ## Options
@@ -68,7 +68,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var i18n=require("i18n-express"); // <-- require the module
+var i18n=require("i18n-express-4plugin"); // <-- require the module
 
 var indexRoutes = require('./routes/index');
 
@@ -89,7 +89,7 @@ app.use(i18n({
   translationsPath: path.join(__dirname, 'i18n'), // <--- use here. Specify translations files path.
   siteLangs: ["en","es"],
   textsVarName: 'translation'
-}));
+}).express);
 ...
 
 app.use('/', indexRoutes);
@@ -99,6 +99,12 @@ module.exports = app;
 ...
 
 ```
+Within your plugin, you can add another translation paths...
+
+```javascript
+i18n.addTranslationsPath(path.join(__dirname,"i18n"));
+```
+
 
 Now in your ejs view you have `texts` object and `lang` variable with the active language:
 
@@ -136,4 +142,4 @@ MIT
 
 ## Author
 
-  - [Facu ZAK](https://github.com/koalazak) 
+  - [Weezly](https://github.com/weezly) 
