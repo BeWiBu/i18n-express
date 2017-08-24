@@ -26,6 +26,35 @@ function getLangFromCookie (req, cookieName) {
   }
 }
 
+//Making deep objects from dotted key's 
+//e.g.  
+//  "meter.1.power":"Meter 1 power" 
+//will changed to...
+//  "meter":{ "1":{"power":"Meter 1 power"}}
+function resolveObjects(content)
+{
+  Object.keys(content).forEach(function(key){
+    var tokens=key.split(".");
+    if(tokens.length>1){
+      var value=content[key];
+      var newOb={};
+      var tmpOb=newOb;
+      var lastVal=newOb;
+      tokens.forEach(function(key){
+        tmpOb[key]={};
+        lastVal=tmpOb;
+        tmpOb=tmpOb[key];
+      });
+      lastVal[tokens[tokens.length-1]]=value;
+      delete content[key];
+      extend(true,content,newOb);
+    }
+    else if(typeof content[key] =="object")
+      resolveObjects(content[key]);
+  });
+}
+
+
 function loadLangJSONFiles (langPath, defaultLang) {
   var i18n = [];
   i18n[defaultLang] = [];
@@ -39,7 +68,10 @@ function loadLangJSONFiles (langPath, defaultLang) {
           delete require.cache[require.resolve(langPath + '/' + files[i])];
         } catch (e) {}
 
-        i18n[files[i].split('.').shift().toLowerCase()] = require(langPath + '/' + files[i]);
+        var content=require(langPath + '/' + files[i]);
+        resolveObjects(content);
+
+        i18n[files[i].split('.').shift().toLowerCase()] = content;
       }
     }
   } else {
@@ -67,17 +99,28 @@ exports = module.exports = function (opts) {
   var translationPaths=[];
 
   function addTranslationsPath(path){
+    // if this path allways exists, don't use it
     if(translationPaths.indexOf(path)>=0)
       return;
+    translationPaths.push(path);
 
+    // loading the translations of this path...
     var thisTranslations = loadLangJSONFiles(path, defaultLang);
-    extend(i18nTranslations,thisTranslations);
+    // ...and extend the whole translations with it...
+    i18nTranslations=extend(true,{},thisTranslations,i18nTranslations);
     
+    // wait for any file changes in this path...
     fs.watch(path, function (event, filename) {
       if (filename) {
         try {
-          var thisTranslations = loadLangJSONFiles(path, defaultLang);
-          extend(i18nTranslations,thisTranslations);
+
+          //re-translate all paths
+          i18nTranslations=[];
+          translationPaths.forEach(function(path){
+            var thisTranslations = loadLangJSONFiles(path, defaultLang);
+            i18nTranslations=extend(true,{},thisTranslations,i18nTranslations);
+          })
+          
         } catch (ee) {
           // Some editors first empty the file and then save the content. This generate a "Unexpected end of input" error
         }
@@ -85,7 +128,8 @@ exports = module.exports = function (opts) {
     });
   }
 
- 
+  // add the main translation path 
+  addTranslationsPath(translationsPath);
 
   function express (req, res, next) {
     var alreadyTryCookie = false;
