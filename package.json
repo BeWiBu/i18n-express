@@ -1,6 +1,6 @@
 {
-  "name": "i18n-multi-express",
-  "version": "0.0.1",
+  "name": "i18n-express-4plugin",
+  "version": "0.0.6",
   "description": "A simple i18n middleware for Express.js.",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/weezly/i18n-multi-express.git"
+    "url": "https://github.com/bewibu/i18n-express-4plugin.git"
   },
   "keywords": [
     "i18n",
@@ -44,9 +44,9 @@
   "author": "weezly",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/weezly/i18n-multi-express/issues"
+    "url": "https://github.com/bewibu/i18n-express-4plugin/issues"
   },
-  "homepage": "https://github.com/weezly/i18n-multi-express",
+  "homepage": "https://github.com/bewibu/i18n-express-4plugin",
   "dependencies": {
     "extend": "^3.0.1"
   }
